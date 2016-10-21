@@ -1,0 +1,225 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/app-layout/app-drawer/app-drawer.html">
+<link rel="import" href="../bower_components/app-layout/app-drawer-layout/app-drawer-layout.html">
+<link rel="import" href="../bower_components/app-layout/app-header/app-header.html">
+<link rel="import" href="../bower_components/app-layout/app-header-layout/app-header-layout.html">
+<link rel="import" href="../bower_components/app-layout/app-scroll-effects/app-scroll-effects.html">
+<link rel="import" href="../bower_components/app-layout/app-toolbar/app-toolbar.html">
+<link rel="import" href="../bower_components/app-route/app-location.html">
+<link rel="import" href="../bower_components/app-route/app-route.html">
+<link rel="import" href="../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../bower_components/iron-selector/iron-selector.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../bower_components/paper-ripple/paper-ripple.html">
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../bower_components/iron-icons/maps-icons.html">
+<link rel="import" href="../bower_components/iron-icons/editor-icons.html">
+
+<dom-module id="admin-app">
+  <template>
+    <style>
+      :host {
+        --app-primary-color: #4285f4;
+        --app-secondary-color: black;
+
+        display: block;
+      }
+
+      app-header {
+        color: #fff;
+        background-color: var(--app-primary-color);
+      }
+      app-header paper-icon-button {
+        --paper-icon-button-ink-color: white;
+      }
+
+      .menu-list {
+        box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.12), 0 1px 5px 0 rgba(0, 0, 0, 0.2);
+      }
+
+      .menu {
+        padding-bottom: 20px;
+      }
+
+      .menu-list a {
+        display: block;
+        padding: 0 16px;
+        text-decoration: none;
+        color: var(--app-secondary-color);
+        line-height: 40px;
+        position: relative;
+      }
+
+      .menu-item-name {
+        padding-left: 16px;
+      }
+
+      .drawer-list a.iron-selected {
+        color: black;
+        font-weight: bold;
+      }
+
+      .flex-horizontal {
+        @apply(--layout-horizontal);
+      }
+      .flexchild {
+        @apply(--layout-flex);
+      }
+      .flex-end-justified {
+        @apply(--layout-horizontal);
+        @apply(--layout-end-justified);
+      }
+      .side-top-toolbar-icons {
+        width: 100%;
+      }
+      .side-top-toolbar-icon {
+        border-left: 1px solid rgba(0, 0, 0, 0.1);
+      }
+      .drawer-list .big-icon {
+        --iron-icon-fill-color: grey;
+      }
+    </style>
+
+    <app-location route="{{route}}"></app-location>
+    <app-route
+        route="{{route}}"
+        pattern="/:page"
+        data="{{routeData}}"
+        tail="{{subroute}}"></app-route>
+
+    <app-drawer-layout fullbleed>
+      <!-- Drawer content -->
+      <app-drawer class="menu-list">
+
+        <app-toolbar class="menu">
+          Menu
+          <div class="side-top-toolbar-icons flex-end-justified">
+            <paper-icon-button icon="icons:settings" class="side-top-toolbar-icon"></paper-icon-button>
+          </div>
+        </app-toolbar>
+
+        <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
+          <template is="dom-repeat" items="{{pages}}">
+            <a name="{{item.name}}" href="/{{item.url}}" style="position:relative;">
+              <paper-ripple></paper-ripple>
+              <div class="container flex-horizontal">
+                <div>
+                  <iron-icon icon="{{item.icon}}" class="big-icon"></iron-icon>
+                </div>
+                <div class="flexchild menu-item-name">
+                  {{item.name}}
+                </div>
+              </div>
+            </a>
+          </template>
+        </iron-selector>
+      </app-drawer>
+
+      <!-- Main content -->
+      <app-header-layout has-scrolling-region>
+
+        <app-header condenses reveals effects="waterfall">
+          <app-toolbar>
+            <paper-icon-button icon="menu" drawer-toggle></paper-icon-button>
+            <div main-title>Progressive Web App Dashboard</div>
+          </app-toolbar>
+        </app-header>
+
+        <iron-pages
+            selected="[[page]]"
+            attr-for-selected="name"
+            fallback-selection="view404"
+            role="main">
+          <app-dashboard name="dashboard"></app-dashboard>
+          <my-view1 name="view1"></my-view1>
+          <my-view2 name="view2"></my-view2>
+          <my-view3 name="view3"></my-view3>
+          <my-view404 name="view404"></my-view404>
+        </iron-pages>
+      </app-header-layout>
+    </app-drawer-layout>
+  </template>
+
+  <script>
+    Polymer({
+      is: 'admin-app',
+
+      properties: {
+        page: {
+          type: String,
+          reflectToAttribute: true,
+          observer: '_pageChanged'
+        },
+        pages: {
+          type: Array,
+          value: [
+            {
+              name: 'Dashboard',
+              url: 'dashboard',
+              icon: 'icons:dashboard'
+            },
+            {
+              name: 'Forms',
+              url: 'forms',
+              icon: 'icons:line-style'
+            },
+            {
+              name: 'Charts',
+              url: 'charts',
+              icon: 'icons:donut-small'
+            },
+            {
+              name: 'UI Elements',
+              url: 'ui-elements',
+              icon: 'icons:extension'
+            },
+            {
+              name: 'Maps',
+              url: 'maps',
+              icon: 'maps:map'
+            },
+            {
+              name: 'Tables',
+              url: 'tables',
+              icon: 'icons:sort'
+            },
+            {
+              name: 'Calendar',
+              url: 'calendar',
+              icon: 'icons:date-range'
+            },
+            {
+              name: 'Typography',
+              url: 'typography',
+              icon: 'editor:text-fields'
+            },
+            {
+              name: 'Login Page',
+              url: 'login-page',
+              icon: 'icons:perm-identity'
+            }
+          ]
+        }
+      },
+
+      observers: [
+        '_routePageChanged(routeData.page)'
+      ],
+
+      _routePageChanged: function(page) {
+        this.page = page || 'dashboard';
+      },
+
+      _pageChanged: function(page) {
+        // Load page import on demand. Show 404 page if fails
+        var resolvedPageUrl = this.resolveUrl('app-' + page + '.html');
+        this.importHref(resolvedPageUrl, null, this._showPage404, true);
+      },
+
+      _showPage404: function() {
+        this.page = 'view404';
+      }
+    });
+  </script>
+</dom-module>
